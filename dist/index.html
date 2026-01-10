@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>balangkas | student schedule</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#5d4037">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div id="auth-loading" class="overlay hidden">
+        <div class="sticky-note auth-note">
+            <div class="pin blue-pin"></div>
+            <div class="loader"></div>
+            <p id="auth-status-msg">connecting to cloud...</p>
+            <p id="manual-cancel-auth" class="cancel-text-link">cancel login</p>
+        </div>
+    </div>
+
+    <div id="pwa-gatekeeper" class="overlay hidden">
+        <div class="sticky-note gatekeeper-note">
+            <div class="pin red-pin"></div>
+            <h2>install required</h2>
+            <p>to use <b>balangkas</b>, you must install it on your phone.</p>
+            <div class="instructions">
+                <p>1. tap the <b>share</b> or <b>menu</b> button.</p>
+                <p>2. select <b>"add to home screen"</b>.</p>
+                <p>3. open the app from your home screen.</p>
+            </div>
+            <p class="footer-note">this ensures offline support and a better experience.</p>
+        </div>
+    </div>
+
+    <div id="modal-overlay" class="overlay hidden">
+        <div class="sticky-note form-note">
+            <div class="pin blue-pin"></div>
+            <h3 id="modal-title">new balangkas</h3>
+            <form id="subject-form" novalidate>
+                <input type="hidden" id="sub-id">
+                <div class="input-group"><input type="text" id="sub-name" placeholder="subject name" required maxlength="30" autocomplete="off"></div>
+                <div class="input-group"><input type="text" id="sub-code" placeholder="subject code" maxlength="10" autocomplete="off"></div>
+                <div class="input-group"><input type="text" id="sub-prof" placeholder="instructor/teacher" maxlength="30" autocomplete="off"></div>
+                <div class="input-group"><input type="text" id="sub-room" placeholder="room/link" maxlength="100" autocomplete="off"></div>
+                <div class="input-group"><input type="text" id="sub-desc" placeholder="description/comment (optional)" maxlength="60" autocomplete="off"></div>
+                <div class="day-selector" id="day-selector">
+                    <div class="day-tag" data-day="1">mon</div><div class="day-tag" data-day="2">tue</div><div class="day-tag" data-day="3">wed</div><div class="day-tag" data-day="4">thu</div><div class="day-tag" data-day="5">fri</div><div class="day-tag" data-day="6">sat</div><div class="day-tag" data-day="0">sun</div>
+                </div>
+                <div class="time-row" id="time-input-group"><label for="sub-start">from:</label><input type="time" id="sub-start" required><span>to</span><input type="time" id="sub-end" required></div>
+                <div class="color-picker">
+                    <label class="color-opt yellow"><input type="radio" name="color" value="#fff9c4" checked></label>
+                    <label class="color-opt blue"><input type="radio" name="color" value="#bbdefb"></label>
+                    <label class="color-opt green"><input type="radio" name="color" value="#c8e6c9"></label>
+                    <label class="color-opt pink"><input type="radio" name="color" value="#ffcdd2"></label>
+                </div>
+                <div class="form-actions"><button type="button" onclick="closeModal()">cancel</button><div class="action-group"><button type="button" id="delete-btn" class="hidden btn-danger">delete</button><button type="submit" id="submit-btn">pin it!</button></div></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="delete-modal" class="overlay delete-modal-overlay hidden">
+        <div class="sticky-note delete-note">
+            <div class="pin red-pin"></div>
+            <h3 class="delete-title">wait!</h3>
+            <p id="delete-msg">are you sure you want to remove this subject?</p>
+            <div class="form-actions delete-actions"><button type="button" onclick="closeDeleteModal()">cancel</button><button type="button" id="confirm-delete-btn" class="btn-confirm-delete">delete</button></div>
+        </div>
+    </div>
+
+    <div id="conflict-modal" class="overlay conflict-modal-overlay hidden">
+        <div class="sticky-note conflict-note"><div class="pin red-pin"></div><h3 class="conflict-title">scheduling note</h3><p id="conflict-msg"></p><div class="form-actions conflict-actions"><button type="button" onclick="closeConflictModal()">got it!</button></div></div>
+    </div>
+
+    <div id="menu-overlay" class="overlay hidden"></div>
+    <div id="settings-menu" class="side-nav">
+        <div class="nav-content sticky-note">
+            <div class="pin blue-pin"></div>
+            <button class="close-nav" id="close-settings">×</button>
+            
+            <h3 class="nav-title">actions</h3>
+            <button id="save-img" class="flat-nav-btn">save board as image</button>
+            
+            <hr class="nav-divider">
+            
+            <h3 class="nav-title">cloud sync</h3>
+            <div id="sync-ui">
+                <p class="sync-status-nav">status: <span id="sync-status">offline</span></p>
+
+                <div id="logged-out-view">
+                    <p class="nav-desc">login with google to save your schedule to the cloud. this is optional.</p>
+                    <button id="login-btn" class="login-btn-design">login with google</button>
+                </div>
+                <div id="logged-in-view" class="hidden">
+                    <p id="user-email-display" class="user-id-text"></p>
+                    <button id="logout-btn" class="logout-btn">logout</button>
+                </div>
+            </div>
+            
+            <hr class="nav-divider">
+            <h3 class="nav-title">app info</h3>
+            <p class="app-version-text">balangkas v1.0.0<br>created by kenneth co</p>
+        </div>
+    </div>
+
+    <div class="board-wrapper">
+        <header>
+            <div class="brand">
+                <h1>
+                    <input type="text" id="board-title" maxlength="20" spellcheck="false" autocomplete="off">
+                    <small id="sw-version-display"></small>
+                </h1>
+            </div>
+            <nav class="main-nav">
+                <button id="toggle-settings" class="flat-header-btn" title="settings">≡</button>
+            </nav>
+        </header>
+
+        <div id="empty-board-msg" class="empty-board-msg hidden">
+            tap + to start pinning your schedule.
+        </div>
+
+        <main id="board-scroll" class="scroll-container">
+            <div id="schedule-grid" class="balangkas-grid"></div>
+        </main>
+
+        <button id="open-add-modal" class="flat-fab" title="add subject">+</button>
+    </div>
+
+    <canvas id="export-canvas"></canvas>
+    
+    <script src="/js/vendor/firebase-app.js"></script>
+    <script src="/js/vendor/firebase-auth.js"></script>
+    <script src="/js/vendor/firebase-firestore.js"></script>
+
+    <script type="module" src="/js/autoupdate.js"></script>
+    <script type="module" src="/js/settings.js"></script>
+    <script type="module" src="/js/title.js"></script>
+    <script type="module" src="/js/app.js"></script>
+</body>
+</html>

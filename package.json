@@ -1,0 +1,17 @@
+{
+  "name": "balangkas-pwa",
+  "version": "1.0.0",
+  "scripts": {
+    "clean": "shx rm -rf dist",
+    "copy": "shx cp -r public dist",
+    "obfuscate": "javascript-obfuscator ./dist/js --output ./dist/js --compact true --self-defending false --string-array true",
+    "build": "npm run clean && npm run copy && npm run obfuscate",
+    "serve": "npx serve dist",
+    "deploy": "npm run build && git add dist -f && git commit -m \"Deploy Update\" && git subtree push --prefix dist origin deploy"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0",
+    "javascript-obfuscator": "^4.1.1",
+    "shx": "^0.3.4"
+  }
+}

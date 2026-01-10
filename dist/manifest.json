@@ -1,0 +1,40 @@
+{
+  "name": "balangkas",
+  "short_name": "balangkas",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#5d4037",
+  "theme_color": "#5d4037",
+  "icons": [
+    {
+      "src": "appicons/32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "appicons/152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "appicons/167.png",
+      "sizes": "167x167",
+      "type": "image/png"
+    },
+    {
+      "src": "appicons/180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "appicons/192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "appicons/512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
