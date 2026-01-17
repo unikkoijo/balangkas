@@ -1,0 +1,13 @@
+# Ignore the source folder
+public/
+
+# Ignore dependencies
+node_modules/
+
+# Ignore system junk
+.DS_Store
+Thumbs.db
+
+appicon.html
+
+go.bat
